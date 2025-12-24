@@ -1,0 +1,34 @@
+# WordPress core files
+/wp-admin/
+/wp-includes/
+/wp-*.php
+/xmlrpc.php
+/license.txt
+/readme.html
+
+# WordPress config (contains sensitive database info)
+wp-config.php
+
+# Uploads and cache
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/upgrade/
+
+# Plugins (you can remove this line if you want to back up plugins too)
+/wp-content/plugins/
+
+# Backup files
+*.tar.gz
+*.zip
+*.sql
+
+# Server configs (may contain sensitive info)
+.htaccess
+.user.ini
+_index.html
+.infomaniak-maintenance.html
+
+# System files
+.DS_Store
+Thumbs.db
+*.log
