@@ -285,18 +285,105 @@ function portfolio_save_project_meta($post_id) {
 add_action('save_post_project', 'portfolio_save_project_meta');
 
 // =============================================
+// REGISTER SELECTED WORKS (max 6, can link to projects)
+// =============================================
+function portfolio_register_selected_works() {
+	register_post_type('selected_work', array(
+		'labels' => array(
+			'name'               => 'Selected Works',
+			'singular_name'      => 'Selected Work',
+			'add_new'            => 'Add New',
+			'add_new_item'       => 'Add New Selected Work',
+			'edit_item'          => 'Edit Selected Work',
+			'view_item'          => 'View Selected Work',
+			'all_items'          => 'All Selected Works',
+			'search_items'       => 'Search Selected Works',
+			'not_found'          => 'No selected works found',
+		),
+		'public'             => true,
+		'has_archive'        => false,
+		'menu_icon'          => 'dashicons-star-filled',
+		'supports'           => array('title', 'thumbnail'),
+		'show_in_rest'       => true,
+		'menu_position'      => 21,
+	));
+}
+add_action('init', 'portfolio_register_selected_works');
+
+// Meta box for selected work to link to a project
+function selected_work_meta_box() {
+	add_meta_box(
+		'selected_work_details',
+		'Selected Work Settings',
+		'selected_work_meta_box_html',
+		'selected_work',
+		'normal',
+		'high'
+	);
+}
+add_action('add_meta_boxes', 'selected_work_meta_box');
+
+function selected_work_meta_box_html($post) {
+	$linked_project = get_post_meta($post->ID, '_linked_project_id', true);
+	$external_url = get_post_meta($post->ID, '_external_url', true);
+
+	wp_nonce_field('save_selected_work_meta', 'selected_work_nonce');
+
+	// Get all projects for dropdown
+	$projects = get_posts(array(
+		'post_type' => 'project',
+		'posts_per_page' => -1,
+		'orderby' => 'title',
+		'order' => 'ASC'
+	));
+	?>
+	<p>
+		<label><strong>Link to Existing Project:</strong></label><br>
+		<select name="linked_project_id" style="width: 100%; max-width: 500px;">
+			<option value="">-- None (use external URL instead) --</option>
+			<?php foreach ($projects as $project) : ?>
+				<option value="<?php echo $project->ID; ?>" <?php selected($linked_project, $project->ID); ?>>
+					<?php echo esc_html($project->post_title); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+		<br><small>Select a project from your Projects to link to this selected work</small>
+	</p>
+	<p>
+		<label><strong>OR External URL:</strong></label><br>
+		<input type="url" name="external_url" value="<?php echo esc_url($external_url); ?>" style="width: 100%; max-width: 500px;" placeholder="https://example.com">
+		<br><small>If no project is selected, this URL will be used instead</small>
+	</p>
+	<p>
+		<em><strong>Note:</strong> Maximum 6 selected works will be displayed on the homepage</em>
+	</p>
+	<?php
+}
+
+function save_selected_work_meta($post_id) {
+	if (!isset($_POST['selected_work_nonce']) || !wp_verify_nonce($_POST['selected_work_nonce'], 'save_selected_work_meta')) {
+		return;
+	}
+	if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+		return;
+	}
+
+	if (isset($_POST['linked_project_id'])) {
+		update_post_meta($post_id, '_linked_project_id', intval($_POST['linked_project_id']));
+	}
+	if (isset($_POST['external_url'])) {
+		update_post_meta($post_id, '_external_url', esc_url_raw($_POST['external_url']));
+	}
+}
+add_action('save_post_selected_work', 'save_selected_work_meta');
+
+// =============================================
 // ENQUEUE PORTFOLIO STYLES AND SCRIPTS
 // =============================================
 function portfolio_enqueue_assets() {
-	wp_enqueue_style('portfolio-css', get_template_directory_uri() . '/css/portfolio.css', array(), '1.2');
-
 	if (is_front_page()) {
-		wp_enqueue_style('scratch-css', get_template_directory_uri() . '/css/scratch.css', array(), '1.2');
-		wp_enqueue_script('scratch-js', get_template_directory_uri() . '/js/scratch.js', array(), '1.2', true);
-		wp_localize_script('scratch-js', 'scratchData', array('themePath' => get_template_directory_uri()));
-
-		wp_enqueue_script('portfolio-js', get_template_directory_uri() . '/js/portfolio.js', array(), '1.2', true);
-		wp_localize_script('portfolio-js', 'portfolioAjax', array('ajaxurl' => admin_url('admin-ajax.php')));
+		// New one-page portfolio CSS (no scratch effect)
+		wp_enqueue_style('portfolio-css', get_template_directory_uri() . '/css/portfolio-new.css', array(), '2.0');
 	}
 }
 add_action('wp_enqueue_scripts', 'portfolio_enqueue_assets');
