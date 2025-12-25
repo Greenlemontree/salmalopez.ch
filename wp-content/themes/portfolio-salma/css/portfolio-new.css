@@ -72,40 +72,26 @@ a {
     overflow: hidden;
 }
 
-.hero-image-container {
+/* Background image layer */
+.hero-background {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-}
-
-.hero-bg-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    background-size: cover;
+    background-position: center;
     filter: grayscale(100%);
+    z-index: 1;
 }
 
-.hero-mask {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: auto;
-}
-
-.hero-mask polygon {
-    cursor: move;
-}
-
+/* Text layer (behind the gray overlay) */
 .hero-text {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: -1;
+    z-index: 2;
     text-align: center;
     width: 90%;
     max-width: 1200px;
@@ -114,9 +100,23 @@ a {
 .hero-text h1 {
     font-size: clamp(2rem, 6vw, 5rem);
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.3;
     letter-spacing: 0.02em;
-    text-transform: uppercase;
+}
+
+/* Gray overlay with mask cutout */
+.hero-mask-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: auto;
+}
+
+.hero-mask-overlay polygon {
+    cursor: move;
 }
 
 /* =============================================

@@ -23,30 +23,30 @@
     </div>
 </nav>
 
-<!-- Hero Section with Masked Image -->
+<!-- Hero Section with Masked Text Reveal -->
 <section id="hero" class="hero-section">
-    <div class="hero-image-container">
-        <?php
-        // Get featured image or default
-        $hero_image = get_theme_mod('hero_image', get_template_directory_uri() . '/images/hero.jpg');
-        ?>
-        <img src="<?php echo esc_url($hero_image); ?>" alt="Hero" class="hero-bg-image">
+    <!-- Background Image -->
+    <?php
+    $hero_image = get_theme_mod('hero_image', get_template_directory_uri() . '/images/menu.jpg');
+    ?>
+    <div class="hero-background" style="background-image: url('<?php echo esc_url($hero_image); ?>')"></div>
 
-        <!-- SVG Mask Shape (draggable points) -->
-        <svg class="hero-mask" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
-            <defs>
-                <clipPath id="heroClipPath">
-                    <polygon id="heroPolygon" points="300,150 600,200 900,180 1100,300 950,650 400,600" />
-                </clipPath>
-            </defs>
-            <image href="<?php echo esc_url($hero_image); ?>" width="1920" height="1080" clip-path="url(#heroClipPath)" />
-        </svg>
-    </div>
-
-    <!-- Text Behind Mask -->
+    <!-- Text Layer -->
     <div class="hero-text">
-        <h1>UI UX<br>ILLUSTRATION ANIMATION<br>VIDEOGRAPHY CREATIVE<br>DIRECTION</h1>
+        <h1>Salma Lopez<br>Web Designer<br>UI UX Illustration Animation<br>Videography Creative Projects</h1>
     </div>
+
+    <!-- SVG Mask Overlay (draggable points reveal the text) -->
+    <svg class="hero-mask-overlay" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <defs>
+            <mask id="heroMask">
+                <rect width="1920" height="1080" fill="white"/>
+                <polygon id="heroPolygon" points="400,200 800,250 1200,220 1400,400 1200,800 500,750" fill="black" />
+            </mask>
+        </defs>
+        <!-- Gray overlay with mask cutout -->
+        <rect width="1920" height="1080" fill="rgba(128,128,128,0.95)" mask="url(#heroMask)" />
+    </svg>
 </section>
 
 <!-- About Section -->
