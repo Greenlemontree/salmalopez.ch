@@ -967,3 +967,286 @@ textarea {
 	margin-right: auto;
 	margin-bottom: 1.5em;
 }
+
+/*--------------------------------------------------------------
+# Hero Section & Interactive Mask
+--------------------------------------------------------------*/
+
+/* Navigation Bar
+--------------------------------------------- */
+.site-header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	background-color: #e8e8e8;
+}
+
+.main-navigation {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.75rem 2rem;
+	max-width: 1400px;
+	margin: 0 auto;
+}
+
+.nav-left,
+.nav-right {
+	flex: 1;
+}
+
+.nav-left {
+	display: flex;
+	justify-content: flex-start;
+}
+
+.nav-right {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.nav-logo {
+	flex: 0 0 auto;
+	padding: 0 2rem;
+}
+
+.nav-menu {
+	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	gap: 2rem;
+}
+
+.nav-menu-left {
+	justify-content: flex-start;
+}
+
+.nav-menu-right {
+	justify-content: flex-end;
+}
+
+.nav-menu li {
+	margin: 0;
+}
+
+.nav-menu a {
+	display: block;
+	padding: 0.5rem 0;
+	color: #1a1a1a;
+	text-decoration: none;
+	font-size: 0.85rem;
+	font-weight: 500;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	transition: color 0.2s ease;
+}
+
+.nav-menu a:hover,
+.nav-menu a:focus {
+	color: #666;
+}
+
+.nav-menu a:visited {
+	color: #1a1a1a;
+}
+
+/* Logo */
+.site-logo-link,
+.custom-logo-link {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #1a1a1a;
+}
+
+.site-logo-icon {
+	width: 36px;
+	height: 36px;
+}
+
+.custom-logo {
+	max-height: 40px;
+	width: auto;
+}
+
+/* Mobile menu toggle */
+.menu-toggle {
+	display: none;
+	background: none;
+	border: none;
+	padding: 0.5rem;
+	cursor: pointer;
+}
+
+.menu-toggle-icon {
+	display: block;
+	width: 24px;
+	height: 2px;
+	background: #1a1a1a;
+	position: relative;
+}
+
+.menu-toggle-icon::before,
+.menu-toggle-icon::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background: #1a1a1a;
+}
+
+.menu-toggle-icon::before {
+	top: -7px;
+}
+
+.menu-toggle-icon::after {
+	bottom: -7px;
+}
+
+/* Hero Section
+--------------------------------------------- */
+.hero-section {
+	position: relative;
+	width: 100%;
+	height: 100vh;
+	min-height: 600px;
+	overflow: hidden;
+	background-color: #1a1a1a;
+}
+
+/* BOTTOM LAYER: Text (revealed through the mask hole) */
+.hero-text-layer {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1;
+	padding: 2rem;
+}
+
+.hero-skills {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 0;
+	max-width: 90vw;
+}
+
+.hero-skill {
+	font-family: 'Times New Roman', Times, Georgia, serif;
+	font-size: clamp(3rem, 10vw, 8rem);
+	font-weight: 400;
+	line-height: 1.1;
+	color: #ffffff;
+	text-transform: uppercase;
+	letter-spacing: -0.02em;
+	white-space: nowrap;
+}
+
+/* TOP LAYER: Image with SVG mask (has hole revealing text) */
+.hero-image-layer {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+}
+
+.hero-svg {
+	width: 100%;
+	height: 100%;
+	display: block;
+	/* No CSS transforms - Safari compatibility */
+}
+
+/* Control points - always visible */
+.control-points {
+	pointer-events: all;
+}
+
+.control-point {
+	cursor: grab;
+	touch-action: none;
+}
+
+/* Page content section */
+.page-content-section {
+	padding: 4rem 2rem;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+/* Responsive
+--------------------------------------------- */
+@media screen and (max-width: 768px) {
+	.main-navigation {
+		flex-wrap: wrap;
+		padding: 0.75rem 1rem;
+	}
+
+	.menu-toggle {
+		display: block;
+		order: 1;
+	}
+
+	.nav-logo {
+		order: 2;
+		flex: 1;
+		text-align: center;
+		padding: 0 1rem;
+	}
+
+	.nav-left,
+	.nav-right {
+		display: none;
+		width: 100%;
+		order: 3;
+	}
+
+	.main-navigation.toggled .nav-left,
+	.main-navigation.toggled .nav-right {
+		display: block;
+	}
+
+	.nav-menu {
+		flex-direction: column;
+		gap: 0;
+		padding: 1rem 0;
+	}
+
+	.nav-menu a {
+		padding: 0.75rem 0;
+	}
+
+	.hero-skill {
+		font-size: clamp(2rem, 8vw, 4rem);
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.hero-skill {
+		font-size: clamp(1.5rem, 12vw, 3rem);
+	}
+
+	.hero-text-layer {
+		padding: 1rem;
+	}
+}
+
+/* Graceful degradation - if JS fails, show content normally */
+.no-js .hero-section {
+	background-size: cover;
+	background-position: center;
+}
+
+.no-js .hero-image-layer {
+	opacity: 0.7;
+}
+
+.no-js .control-points {
+	display: none;
+}

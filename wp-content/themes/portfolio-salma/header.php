@@ -26,34 +26,51 @@
 	<a class="skip-link screen-reader-text" href="#primary"><?php esc_html_e( 'Skip to content', 'portfolio-salma' ); ?></a>
 
 	<header id="masthead" class="site-header">
-		<div class="site-branding">
-			<?php
-			the_custom_logo();
-			if ( is_front_page() && is_home() ) :
-				?>
-				<h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
-				<?php
-			else :
-				?>
-				<p class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></p>
-				<?php
-			endif;
-			$portfolio_salma_description = get_bloginfo( 'description', 'display' );
-			if ( $portfolio_salma_description || is_customize_preview() ) :
-				?>
-				<p class="site-description"><?php echo $portfolio_salma_description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
-			<?php endif; ?>
-		</div><!-- .site-branding -->
-
 		<nav id="site-navigation" class="main-navigation">
-			<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"><?php esc_html_e( 'Primary Menu', 'portfolio-salma' ); ?></button>
-			<?php
-			wp_nav_menu(
-				array(
-					'theme_location' => 'menu-1',
-					'menu_id'        => 'primary-menu',
-				)
-			);
-			?>
+			<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
+				<span class="menu-toggle-icon"></span>
+				<span class="screen-reader-text"><?php esc_html_e( 'Menu', 'portfolio-salma' ); ?></span>
+			</button>
+
+			<div class="nav-left">
+				<?php
+				wp_nav_menu(
+					array(
+						'theme_location' => 'menu-1',
+						'menu_id'        => 'primary-menu-left',
+						'menu_class'     => 'nav-menu nav-menu-left',
+						'container'      => false,
+						'depth'          => 1,
+					)
+				);
+				?>
+			</div>
+
+			<div class="nav-logo">
+				<?php if ( has_custom_logo() ) : ?>
+					<?php the_custom_logo(); ?>
+				<?php else : ?>
+					<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="site-logo-link" rel="home">
+						<svg class="site-logo-icon" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M20 0L25 15H40L28 24L33 40L20 30L7 40L12 24L0 15H15L20 0Z" fill="currentColor"/>
+						</svg>
+					</a>
+				<?php endif; ?>
+			</div>
+
+			<div class="nav-right">
+				<?php
+				wp_nav_menu(
+					array(
+						'theme_location' => 'menu-2',
+						'menu_id'        => 'primary-menu-right',
+						'menu_class'     => 'nav-menu nav-menu-right',
+						'container'      => false,
+						'depth'          => 1,
+						'fallback_cb'    => false,
+					)
+				);
+				?>
+			</div>
 		</nav><!-- #site-navigation -->
 	</header><!-- #masthead -->
