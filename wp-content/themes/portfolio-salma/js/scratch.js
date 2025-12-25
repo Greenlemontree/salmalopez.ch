@@ -34,40 +34,29 @@ class ScratchReveal {
 
     // Check if a point is on a scratched (transparent) area
     isPointScratched(x, y) {
+        // Check bounds
+        if (x < 0 || y < 0 || x >= this.canvas.width || y >= this.canvas.height) {
+            return true; // Outside canvas = already transparent
+        }
+
         const pixel = this.ctx.getImageData(x, y, 1, 1).data;
-        return pixel[3] === 0; // Alpha is 0 = transparent = scratched
+        return pixel[3] < 10; // Alpha close to 0 = transparent = scratched
     }
 
     bindEvents() {
-        // Mouse events
+        // Mouse events - canvas only receives events when pointer-events is enabled
         this.canvas.addEventListener('mousedown', (e) => {
-            const pos = this.getPosition(e);
-            
-            // If clicking on already scratched area, pass click through
-            if (this.isPointScratched(pos.x, pos.y)) {
-                this.passThroughClick(e);
-                return;
-            }
-            
-            // Otherwise start scratching
             this.startDrawing(e);
         });
-        
+
         // Use document-level events for move/up to handle dragging
         document.addEventListener('mousemove', (e) => this.draw(e));
         document.addEventListener('mouseup', () => this.stopDrawing());
         
-        // Touch events
+        // Touch events - canvas only receives events when pointer-events is enabled
         this.canvas.addEventListener('touchstart', (e) => {
-            const touch = e.touches[0];
-            const pos = this.getTouchPosition(touch);
-            
-            if (this.isPointScratched(pos.x, pos.y)) {
-                // Let touch pass through to content below
-                return;
-            }
-            
             e.preventDefault();
+            const touch = e.touches[0];
             this.startDrawing(touch);
         }, { passive: false });
         
@@ -168,51 +157,24 @@ class ScratchReveal {
         this.ctx.globalCompositeOperation = 'source-over';
     }
 
-    // Erase using a PNG image as mask (dark pixels get erased)
+    // Erase using a PNG image as mask (opaque pixels in PNG = transparent on canvas)
     drawFromImage(imageSrc, options = {}) {
         const img = new Image();
         img.onload = () => {
             const w = this.canvas.width;
             const h = this.canvas.height;
-            
-            // Create temporary canvas to read image pixels
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            
+
             // Calculate size and position (centered, scaled to fit)
             const scale = options.scale || 0.5;
             const imgW = img.width * scale;
             const imgH = img.height * scale;
             const offsetX = options.x !== undefined ? options.x * w : (w - imgW) / 2;
             const offsetY = options.y !== undefined ? options.y * h : (h - imgH) / 2;
-            
-            tempCanvas.width = imgW;
-            tempCanvas.height = imgH;
-            tempCtx.drawImage(img, 0, 0, imgW, imgH);
-            
-            // Get image data
-            const imageData = tempCtx.getImageData(0, 0, imgW, imgH);
-            const pixels = imageData.data;
-            
-            // Erase where the image has dark pixels
+
+            // Use destination-out to erase where the image is drawn
+            // The image's alpha channel determines what gets erased
             this.ctx.globalCompositeOperation = 'destination-out';
-            
-            for (let y = 0; y < imgH; y++) {
-                for (let x = 0; x < imgW; x++) {
-                    const i = (y * imgW + x) * 4;
-                    const r = pixels[i];
-                    const g = pixels[i + 1];
-                    const b = pixels[i + 2];
-                    const a = pixels[i + 3];
-                    
-                    // Check if pixel is dark (the black lines)
-                    const brightness = (r + g + b) / 3;
-                    if (brightness < 128 && a > 128) {
-                        this.ctx.fillRect(offsetX + x, offsetY + y, 1, 1);
-                    }
-                }
-            }
-            
+            this.ctx.drawImage(img, offsetX, offsetY, imgW, imgH);
             this.ctx.globalCompositeOperation = 'source-over';
         };
         img.src = imageSrc;
@@ -246,46 +208,34 @@ document.addEventListener('DOMContentLoaded', () => {
         overlayColor: '#39ff14', // Fluorescent green
     });
 
-    // Custom cursor tracking
-    if (cursorIndicator) {
-        container.addEventListener('mousemove', (e) => {
-            cursorIndicator.style.left = e.clientX + 'px';
-            cursorIndicator.style.top = e.clientY + 'px';
-            
-            // Check if cursor is over scratched or unscratched area
-            const rect = scratch.canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const isScratched = scratch.isPointScratched(x, y);
-            
-            if (isScratched) {
-                cursorIndicator.style.opacity = '0';
-                container.style.cursor = 'auto';
-            } else {
-                cursorIndicator.style.opacity = '1';
-                container.style.cursor = 'none';
-            }
-        });
-
-        container.addEventListener('mousedown', () => {
-            container.classList.add('is-scratching');
-        });
-
-        container.addEventListener('mouseup', () => {
-            container.classList.remove('is-scratching');
-        });
-
-        container.addEventListener('mouseleave', () => {
-            container.classList.remove('is-scratching');
-            cursorIndicator.style.opacity = '0';
-        });
-    }
-
-    // Draw initial scratch pattern from PNG image
+    // Draw initial scratch pattern from PNG image first
     if (themePath) {
         scratch.drawFromImage(themePath + '/images/lemon.png', {
             scale: 0.6,
+        });
+    }
+
+    // Simple cursor tracking
+    if (cursorIndicator) {
+        scratch.canvas.addEventListener('mouseenter', () => {
+            cursorIndicator.style.opacity = '1';
+        });
+
+        scratch.canvas.addEventListener('mousemove', (e) => {
+            cursorIndicator.style.left = e.clientX + 'px';
+            cursorIndicator.style.top = e.clientY + 'px';
+        });
+
+        scratch.canvas.addEventListener('mouseleave', () => {
+            cursorIndicator.style.opacity = '0';
+        });
+
+        scratch.canvas.addEventListener('mousedown', () => {
+            container.classList.add('is-scratching');
+        });
+
+        document.addEventListener('mouseup', () => {
+            container.classList.remove('is-scratching');
         });
     }
 

@@ -288,14 +288,14 @@ add_action('save_post_project', 'portfolio_save_project_meta');
 // ENQUEUE PORTFOLIO STYLES AND SCRIPTS
 // =============================================
 function portfolio_enqueue_assets() {
-	wp_enqueue_style('portfolio-css', get_template_directory_uri() . '/css/portfolio.css', array(), '1.0');
-	
+	wp_enqueue_style('portfolio-css', get_template_directory_uri() . '/css/portfolio.css', array(), '1.2');
+
 	if (is_front_page()) {
-		wp_enqueue_style('scratch-css', get_template_directory_uri() . '/css/scratch.css', array(), '1.0');
-		wp_enqueue_script('scratch-js', get_template_directory_uri() . '/js/scratch.js', array(), '1.0', true);
+		wp_enqueue_style('scratch-css', get_template_directory_uri() . '/css/scratch.css', array(), '1.2');
+		wp_enqueue_script('scratch-js', get_template_directory_uri() . '/js/scratch.js', array(), '1.2', true);
 		wp_localize_script('scratch-js', 'scratchData', array('themePath' => get_template_directory_uri()));
-		
-		wp_enqueue_script('portfolio-js', get_template_directory_uri() . '/js/portfolio.js', array(), '1.0', true);
+
+		wp_enqueue_script('portfolio-js', get_template_directory_uri() . '/js/portfolio.js', array(), '1.2', true);
 		wp_localize_script('portfolio-js', 'portfolioAjax', array('ajaxurl' => admin_url('admin-ajax.php')));
 	}
 }

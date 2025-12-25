@@ -14,7 +14,6 @@
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
-Scratch Overlay
 <div class="scratch-container" id="scratchContainer">
     <canvas class="scratch-canvas" id="scratchCanvas"></canvas>
     <div class="cursor-indicator" id="cursorIndicator">
