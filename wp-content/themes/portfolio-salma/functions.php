@@ -99,12 +99,58 @@ function portfolio_salma_scripts() {
 	wp_style_add_data( 'portfolio-salma-style', 'rtl', 'replace' );
 	wp_enqueue_script( 'portfolio-salma-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
-	// Hero mask interaction script (front page only)
+	// Front page scripts (GSAP, masks, animations)
 	if ( is_front_page() ) {
+		// GSAP Core
+		wp_enqueue_script(
+			'gsap',
+			'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js',
+			array(),
+			'3.12.5',
+			true
+		);
+
+		// GSAP ScrollTrigger
+		wp_enqueue_script(
+			'gsap-scrolltrigger',
+			'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js',
+			array( 'gsap' ),
+			'3.12.5',
+			true
+		);
+
+		// Hero mask interaction script
 		wp_enqueue_script(
 			'portfolio-salma-hero-mask',
 			get_template_directory_uri() . '/js/hero-mask.js',
 			array(),
+			_S_VERSION,
+			true
+		);
+
+		// Selected Works mask interaction script
+		wp_enqueue_script(
+			'portfolio-salma-selected-works-mask',
+			get_template_directory_uri() . '/js/selected-works-mask.js',
+			array(),
+			_S_VERSION,
+			true
+		);
+
+		// Scroll animations script
+		wp_enqueue_script(
+			'portfolio-salma-animations',
+			get_template_directory_uri() . '/js/animations.js',
+			array( 'gsap', 'gsap-scrolltrigger' ),
+			_S_VERSION,
+			true
+		);
+
+		// Hero image slideshow
+		wp_enqueue_script(
+			'portfolio-salma-hero-slideshow',
+			get_template_directory_uri() . '/js/hero-slideshow.js',
+			array( 'gsap' ),
 			_S_VERSION,
 			true
 		);
@@ -120,6 +166,7 @@ require get_template_directory() . '/inc/custom-header.php';
 require get_template_directory() . '/inc/template-tags.php';
 require get_template_directory() . '/inc/template-functions.php';
 require get_template_directory() . '/inc/customizer.php';
+require get_template_directory() . '/inc/cpt-project.php';
 
 if ( defined( 'JETPACK__VERSION' ) ) {
 	require get_template_directory() . '/inc/jetpack.php';

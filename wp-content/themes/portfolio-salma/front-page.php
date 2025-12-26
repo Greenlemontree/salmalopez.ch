@@ -9,9 +9,31 @@ $hero_image = get_theme_mod( 'portfolio_salma_hero_image', get_template_director
 $skills_text = get_theme_mod( 'portfolio_salma_skills_text', "ANIMATION\nWEB DESIGN\nUI/UX\nVIDEOGRAPHY\nILLUSTRATION" );
 $skills_array = array_filter( array_map( 'trim', explode( "\n", $skills_text ) ) );
 
-// Default polygon points (absolute SVG units for viewBox 0 0 1000 600)
-// Angular star-ish shape with 8 points
-$default_points = '150,60 500,30 850,60 950,300 850,540 500,570 150,540 50,300';
+// Get all hero images from the images/hero folder
+$hero_images = array();
+$hero_dir = get_template_directory() . '/images/hero/';
+if ( is_dir( $hero_dir ) ) {
+	$files = glob( $hero_dir . '*.{jpg,jpeg,png,webp}', GLOB_BRACE );
+	if ( $files ) {
+		sort( $files );
+		foreach ( $files as $file ) {
+			$hero_images[] = get_template_directory_uri() . '/images/hero/' . basename( $file );
+		}
+	}
+}
+// Fallback to single hero image if no images in folder
+if ( empty( $hero_images ) ) {
+	$hero_images[] = $hero_image;
+}
+
+// ==========================================================================
+// DEFAULT MASK SHAPE - 12 points for morph effect (4 groups of 3)
+// ==========================================================================
+// This wild irregular shape morphs to a full rectangle when dragged.
+// Groups: A(0,1,11), B(2,3,4), C(5,6,7), D(8,9,10)
+// Keep in sync with js/hero-mask.js WIDE_START
+// ==========================================================================
+$default_points = '150,180 380,220 620,170 870,200 800,270 900,360 850,420 620,380 380,430 130,400 200,320 100,240';
 ?>
 
 <main id="primary" class="site-main">
@@ -21,15 +43,30 @@ $default_points = '150,60 500,30 850,60 950,300 850,540 500,570 150,540 50,300';
 
 		<!-- BOTTOM LAYER: Text (revealed through the mask hole) -->
 		<div class="hero-text-layer">
+			<!-- Main skills - centered -->
 			<div class="hero-skills">
 				<?php foreach ( $skills_array as $skill ) : ?>
 					<span class="hero-skill"><?php echo esc_html( $skill ); ?></span>
 				<?php endforeach; ?>
+
+				<!-- Grey copy above - absolutely positioned -->
+				<div class="hero-skills-repeat hero-skills-repeat-top" aria-hidden="true">
+					<?php foreach ( $skills_array as $skill ) : ?>
+						<span class="hero-skill"><?php echo esc_html( $skill ); ?></span>
+					<?php endforeach; ?>
+				</div>
+
+				<!-- Grey copy below - absolutely positioned -->
+				<div class="hero-skills-repeat hero-skills-repeat-bottom" aria-hidden="true">
+					<?php foreach ( $skills_array as $skill ) : ?>
+						<span class="hero-skill"><?php echo esc_html( $skill ); ?></span>
+					<?php endforeach; ?>
+				</div>
 			</div>
 		</div>
 
 		<!-- TOP LAYER: Image with SVG mask (polygon creates a hole) -->
-		<div class="hero-image-layer">
+		<div class="hero-image-layer" data-hero-images='<?php echo wp_json_encode( $hero_images ); ?>'>
 			<svg
 				class="hero-svg"
 				viewBox="0 0 1000 600"
@@ -49,7 +86,7 @@ $default_points = '150,60 500,30 850,60 950,300 850,540 500,570 150,540 50,300';
 				<!-- Hero image with mask applied (has a hole where polygon is) -->
 				<image
 					id="hero-image"
-					href="<?php echo esc_url( $hero_image ); ?>"
+					href="<?php echo esc_url( $hero_images[0] ); ?>"
 					x="0"
 					y="0"
 					width="1000"
@@ -71,6 +108,137 @@ $default_points = '150,60 500,30 850,60 950,300 850,540 500,570 150,540 50,300';
 		</div>
 
 	</section><!-- .hero-section -->
+
+	<!-- Hello / About + Selected Works Section -->
+	<section id="about" class="about-section">
+		<div class="about-container">
+
+			<!-- LEFT COLUMN: Hello + About -->
+			<div class="about-column about-left">
+				<h2 class="about-heading">Hello!</h2>
+
+				<?php
+				// Get about image from customizer
+				$about_image = get_theme_mod( 'portfolio_salma_about_image', '' );
+				if ( $about_image ) :
+					?>
+					<div class="about-image">
+						<img src="<?php echo esc_url( $about_image ); ?>" alt="<?php esc_attr_e( 'Salma Lopez', 'portfolio-salma' ); ?>" />
+					</div>
+				<?php endif; ?>
+
+				<div class="about-text">
+					<p>I'm Salma, a 21-year-old student pursuing a degree in Interactive Media Design. Currently, I am in my fourth year at CFP-Arts Geneva.</p>
+
+					<p>I'm eager to expand my knowledge by diving deeper into the industry and working on personal projects. While most of my current work stems from the school curriculum, I aim to demonstrate what I've learned over the past two years through projects and collaborations with teachers who are experts in their fields.</p>
+
+					<p>In addition to my academic work, you'll also find some of my personal projects here, including digital illustrations and videography work.</p>
+				</div>
+			</div>
+
+			<!-- RIGHT COLUMN: Selected Works with SVG Mask -->
+			<div class="about-column about-right">
+				<div class="selected-works-wrapper">
+
+					<!-- BACKGROUND LAYER: Grey polygon that follows mask shape -->
+					<div class="selected-works-bg-layer">
+						<svg
+							class="selected-works-bg-svg"
+							viewBox="0 0 600 800"
+							preserveAspectRatio="xMidYMid slice"
+							aria-hidden="true"
+						>
+							<polygon
+								id="selected-works-bg-polygon"
+								points="300,35 420,95 545,140 480,280 565,420 440,520 300,760 160,520 35,450 120,300 55,160 180,95"
+								fill="#D9D9D9"
+							/>
+						</svg>
+					</div>
+
+					<!-- MIDDLE LAYER: Project Grid (revealed through mask) -->
+					<div class="selected-works-grid-layer">
+						<?php
+						$selected_works = portfolio_salma_get_selected_works( 6 );
+						if ( $selected_works->have_posts() ) :
+							?>
+							<div class="selected-works-grid">
+								<?php
+								while ( $selected_works->have_posts() ) :
+									$selected_works->the_post();
+									?>
+									<a href="<?php the_permalink(); ?>" class="selected-work-item">
+										<?php if ( has_post_thumbnail() ) : ?>
+											<?php the_post_thumbnail( 'medium_large', array( 'class' => 'selected-work-thumb' ) ); ?>
+										<?php else : ?>
+											<div class="selected-work-placeholder"></div>
+										<?php endif; ?>
+										<span class="selected-work-title"><?php the_title(); ?></span>
+									</a>
+									<?php
+								endwhile;
+								wp_reset_postdata();
+								?>
+							</div>
+						<?php else : ?>
+							<!-- Fallback: placeholder grid when no projects exist -->
+							<div class="selected-works-grid selected-works-placeholder">
+								<?php for ( $i = 0; $i < 6; $i++ ) : ?>
+									<div class="selected-work-item placeholder-item">
+										<div class="selected-work-placeholder"></div>
+									</div>
+								<?php endfor; ?>
+							</div>
+						<?php endif; ?>
+					</div>
+
+					<!-- TOP LAYER: SVG Mask (creates hole to reveal grid) -->
+					<div class="selected-works-mask-layer">
+						<svg
+							class="selected-works-svg"
+							viewBox="0 0 600 800"
+							preserveAspectRatio="xMidYMid slice"
+							aria-hidden="true"
+						>
+							<defs>
+								<!-- Mask: white = show overlay, black = hole (reveals grid) -->
+								<mask id="selected-works-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="600" height="800">
+									<!-- White background: overlay visible everywhere -->
+									<rect x="0" y="0" width="600" height="800" fill="white" />
+									<!-- Black polygon: creates the hole revealing the grid -->
+									<polygon
+										id="selected-works-polygon"
+										points="300,35 420,95 545,140 480,280 565,420 440,520 300,760 160,520 35,450 120,300 55,160 180,95"
+										fill="black"
+									/>
+								</mask>
+							</defs>
+
+							<!-- Solid overlay with mask (has a hole where polygon is) -->
+							<rect
+								x="0"
+								y="0"
+								width="600"
+								height="800"
+								fill="#171412"
+								mask="url(#selected-works-mask)"
+							/>
+
+							<!-- Control points group (rendered on top, for dragging) -->
+							<g id="selected-works-control-points" class="control-points" aria-hidden="true">
+								<!-- Points will be generated by JS -->
+							</g>
+						</svg>
+					</div>
+
+					<!-- Section label -->
+					<h3 class="selected-works-label">Selected Works</h3>
+
+				</div>
+			</div>
+
+		</div>
+	</section><!-- .about-section -->
 
 	<!-- Page content (if any) -->
 	<?php

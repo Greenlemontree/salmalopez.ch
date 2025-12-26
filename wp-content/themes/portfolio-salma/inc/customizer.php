@@ -103,6 +103,40 @@ function portfolio_salma_customize_register( $wp_customize ) {
 			'section'     => 'portfolio_salma_hero_section',
 		)
 	);
+
+	/*
+	 * About Section Settings
+	 */
+	$wp_customize->add_section(
+		'portfolio_salma_about_section',
+		array(
+			'title'       => __( 'About Section', 'portfolio-salma' ),
+			'description' => __( 'Customize the About / Hello section.', 'portfolio-salma' ),
+			'priority'    => 31,
+		)
+	);
+
+	// About Image
+	$wp_customize->add_setting(
+		'portfolio_salma_about_image',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+		)
+	);
+
+	$wp_customize->add_control(
+		new WP_Customize_Image_Control(
+			$wp_customize,
+			'portfolio_salma_about_image',
+			array(
+				'label'       => __( 'About Photo', 'portfolio-salma' ),
+				'description' => __( 'Upload a photo of yourself for the About section.', 'portfolio-salma' ),
+				'section'     => 'portfolio_salma_about_section',
+				'settings'    => 'portfolio_salma_about_image',
+			)
+		)
+	);
 }
 add_action( 'customize_register', 'portfolio_salma_customize_register' );
 

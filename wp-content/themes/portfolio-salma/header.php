@@ -33,17 +33,10 @@
 			</button>
 
 			<div class="nav-left">
-				<?php
-				wp_nav_menu(
-					array(
-						'theme_location' => 'menu-1',
-						'menu_id'        => 'primary-menu-left',
-						'menu_class'     => 'nav-menu nav-menu-left',
-						'container'      => false,
-						'depth'          => 1,
-					)
-				);
-				?>
+				<ul id="primary-menu-left" class="nav-menu nav-menu-left">
+					<li><a href="#about">ABOUT</a></li>
+					<li><a href="#work">WORK</a></li>
+				</ul>
 			</div>
 
 			<div class="nav-logo">
@@ -51,26 +44,16 @@
 					<?php the_custom_logo(); ?>
 				<?php else : ?>
 					<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="site-logo-link" rel="home">
-						<svg class="site-logo-icon" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M20 0L25 15H40L28 24L33 40L20 30L7 40L12 24L0 15H15L20 0Z" fill="currentColor"/>
-						</svg>
+						<img class="site-logo-icon" src="<?php echo esc_url( get_template_directory_uri() . '/images/logo.png' ); ?>" alt="<?php bloginfo( 'name' ); ?>">
 					</a>
 				<?php endif; ?>
 			</div>
 
 			<div class="nav-right">
-				<?php
-				wp_nav_menu(
-					array(
-						'theme_location' => 'menu-2',
-						'menu_id'        => 'primary-menu-right',
-						'menu_class'     => 'nav-menu nav-menu-right',
-						'container'      => false,
-						'depth'          => 1,
-						'fallback_cb'    => false,
-					)
-				);
-				?>
+				<ul id="primary-menu-right" class="nav-menu nav-menu-right">
+					<li><a href="mailto:salma@salmalopez.ch">EMAIL</a></li>
+					<li><a href="https://www.instagram.com/greenlemontree__/" target="_blank" rel="noopener noreferrer">INSTAGRAM</a></li>
+				</ul>
 			</div>
 		</nav><!-- #site-navigation -->
 	</header><!-- #masthead -->
