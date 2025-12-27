@@ -128,15 +128,6 @@ function portfolio_salma_scripts() {
 			true
 		);
 
-		// Selected Works mask interaction script
-		wp_enqueue_script(
-			'portfolio-salma-selected-works-mask',
-			get_template_directory_uri() . '/js/selected-works-mask.js',
-			array(),
-			_S_VERSION,
-			true
-		);
-
 		// Scroll animations script
 		wp_enqueue_script(
 			'portfolio-salma-animations',
@@ -151,6 +142,15 @@ function portfolio_salma_scripts() {
 			'portfolio-salma-hero-slideshow',
 			get_template_directory_uri() . '/js/hero-slideshow.js',
 			array( 'gsap' ),
+			_S_VERSION,
+			true
+		);
+
+		// Project panel script
+		wp_enqueue_script(
+			'portfolio-salma-project-panel',
+			get_template_directory_uri() . '/js/project-panel.js',
+			array(),
 			_S_VERSION,
 			true
 		);

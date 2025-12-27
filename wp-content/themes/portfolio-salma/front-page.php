@@ -109,14 +109,14 @@ $default_points = '150,180 380,220 620,170 870,200 800,270 900,360 850,420 620,3
 
 	</section><!-- .hero-section -->
 
-	<!-- Hello / About + Selected Works Section -->
+	<!-- About Section - Two Column Layout with Circle Reveal -->
 	<section id="about" class="about-section">
+		<!-- Yellow overlay for circle reveal animation -->
+		<div class="about-reveal-overlay"></div>
+
 		<div class="about-container">
-
-			<!-- LEFT COLUMN: Hello + About -->
-			<div class="about-column about-left">
-				<h2 class="about-heading">Hello!</h2>
-
+			<!-- Left: Image -->
+			<div class="about-left">
 				<?php
 				// Get about image from customizer
 				$about_image = get_theme_mod( 'portfolio_salma_about_image', '' );
@@ -126,6 +126,11 @@ $default_points = '150,180 380,220 620,170 870,200 800,270 900,360 850,420 620,3
 						<img src="<?php echo esc_url( $about_image ); ?>" alt="<?php esc_attr_e( 'Salma Lopez', 'portfolio-salma' ); ?>" />
 					</div>
 				<?php endif; ?>
+			</div>
+
+			<!-- Right: Heading + Text -->
+			<div class="about-right">
+				<h2 class="about-heading">Hello!</h2>
 
 				<div class="about-text">
 					<p>I'm Salma, a 21-year-old student pursuing a degree in Interactive Media Design. Currently, I am in my fourth year at CFP-Arts Geneva.</p>
@@ -135,110 +140,68 @@ $default_points = '150,180 380,220 620,170 870,200 800,270 900,360 850,420 620,3
 					<p>In addition to my academic work, you'll also find some of my personal projects here, including digital illustrations and videography work.</p>
 				</div>
 			</div>
+		</div>
+	</section><!-- .about-section -->
 
-			<!-- RIGHT COLUMN: Selected Works with SVG Mask -->
-			<div class="about-column about-right">
-				<div class="selected-works-wrapper">
+	<!-- Projects Dot Grid Section -->
+	<section id="projects" class="projects-section">
+		<div class="projects-container">
 
-					<!-- BACKGROUND LAYER: Grey polygon that follows mask shape -->
-					<div class="selected-works-bg-layer">
-						<svg
-							class="selected-works-bg-svg"
-							viewBox="0 0 600 800"
-							preserveAspectRatio="xMidYMid slice"
-							aria-hidden="true"
-						>
-							<polygon
-								id="selected-works-bg-polygon"
-								points="300,35 420,95 545,140 480,280 565,420 440,520 300,760 160,520 35,450 120,300 55,160 180,95"
-								fill="#D9D9D9"
-							/>
-						</svg>
-					</div>
+			<!-- Dot Grid -->
+			<div class="projects-dot-grid">
+				<?php
+				$all_projects = new WP_Query( array(
+					'post_type'      => 'project',
+					'posts_per_page' => -1,
+					'orderby'        => 'date',
+					'order'          => 'ASC',
+				) );
 
-					<!-- MIDDLE LAYER: Project Grid (revealed through mask) -->
-					<div class="selected-works-grid-layer">
-						<?php
-						$selected_works = portfolio_salma_get_selected_works( 6 );
-						if ( $selected_works->have_posts() ) :
-							?>
-							<div class="selected-works-grid">
-								<?php
-								while ( $selected_works->have_posts() ) :
-									$selected_works->the_post();
-									?>
-									<a href="<?php the_permalink(); ?>" class="selected-work-item">
-										<?php if ( has_post_thumbnail() ) : ?>
-											<?php the_post_thumbnail( 'medium_large', array( 'class' => 'selected-work-thumb' ) ); ?>
-										<?php else : ?>
-											<div class="selected-work-placeholder"></div>
-										<?php endif; ?>
-										<span class="selected-work-title"><?php the_title(); ?></span>
-									</a>
-									<?php
-								endwhile;
-								wp_reset_postdata();
-								?>
-							</div>
-						<?php else : ?>
-							<!-- Fallback: placeholder grid when no projects exist -->
-							<div class="selected-works-grid selected-works-placeholder">
-								<?php for ( $i = 0; $i < 6; $i++ ) : ?>
-									<div class="selected-work-item placeholder-item">
-										<div class="selected-work-placeholder"></div>
+				if ( $all_projects->have_posts() ) :
+					$project_number = 1;
+
+					while ( $all_projects->have_posts() ) :
+						$all_projects->the_post();
+						$number_display = str_pad( $project_number, 2, '0', STR_PAD_LEFT );
+						$thumbnail_url  = get_the_post_thumbnail_url( get_the_ID(), 'large' );
+						?>
+						<button type="button" class="project-dot-item"
+							data-project-id="<?php echo esc_attr( get_the_ID() ); ?>"
+							data-project-title="<?php echo esc_attr( get_the_title() ); ?>"
+							data-project-excerpt="<?php echo esc_attr( get_the_excerpt() ); ?>"
+							data-project-thumbnail="<?php echo esc_url( $thumbnail_url ); ?>"
+							data-project-content="<?php echo esc_attr( wp_strip_all_tags( get_the_content() ) ); ?>"
+							data-project-link="<?php echo esc_url( get_the_permalink() ); ?>">
+							<!-- Number + Dot -->
+							<span class="project-dot-number"><?php echo esc_html( $number_display ); ?></span>
+							<span class="project-dot"></span>
+
+							<!-- Preview card (hidden, appears on hover) -->
+							<div class="project-dot-preview">
+								<?php if ( has_post_thumbnail() ) : ?>
+									<?php the_post_thumbnail( 'medium' ); ?>
+								<?php else : ?>
+									<div class="project-dot-placeholder"></div>
+								<?php endif; ?>
+								<?php if ( has_excerpt() ) : ?>
+									<div class="project-dot-excerpt">
+										<?php echo esc_html( get_the_excerpt() ); ?>
 									</div>
-								<?php endfor; ?>
+								<?php endif; ?>
 							</div>
-						<?php endif; ?>
-					</div>
-
-					<!-- TOP LAYER: SVG Mask (creates hole to reveal grid) -->
-					<div class="selected-works-mask-layer">
-						<svg
-							class="selected-works-svg"
-							viewBox="0 0 600 800"
-							preserveAspectRatio="xMidYMid slice"
-							aria-hidden="true"
-						>
-							<defs>
-								<!-- Mask: white = show overlay, black = hole (reveals grid) -->
-								<mask id="selected-works-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="600" height="800">
-									<!-- White background: overlay visible everywhere -->
-									<rect x="0" y="0" width="600" height="800" fill="white" />
-									<!-- Black polygon: creates the hole revealing the grid -->
-									<polygon
-										id="selected-works-polygon"
-										points="300,35 420,95 545,140 480,280 565,420 440,520 300,760 160,520 35,450 120,300 55,160 180,95"
-										fill="black"
-									/>
-								</mask>
-							</defs>
-
-							<!-- Solid overlay with mask (has a hole where polygon is) -->
-							<rect
-								x="0"
-								y="0"
-								width="600"
-								height="800"
-								fill="#171412"
-								mask="url(#selected-works-mask)"
-							/>
-
-							<!-- Control points group (rendered on top, for dragging) -->
-							<g id="selected-works-control-points" class="control-points" aria-hidden="true">
-								<!-- Points will be generated by JS -->
-							</g>
-						</svg>
-					</div>
-
-					<!-- Section label -->
-					<h3 class="selected-works-label">Selected Works</h3>
-
-				</div>
+						</button>
+						<?php
+						$project_number++;
+					endwhile;
+					wp_reset_postdata();
+				else :
+					?>
+					<p class="no-projects">No projects yet.</p>
+				<?php endif; ?>
 			</div>
 
 		</div>
-	</section><!-- .about-section -->
+	</section><!-- .projects-section -->
 
 	<!-- Page content (if any) -->
 	<?php
@@ -255,6 +218,31 @@ $default_points = '150,180 380,220 620,170 870,200 800,270 900,360 850,420 620,3
 	?>
 
 </main>
+
+<!-- Project Slide-in Panel -->
+<div id="project-panel" class="project-panel" aria-hidden="true">
+	<div class="project-panel-overlay"></div>
+	<aside class="project-panel-content">
+		<button type="button" class="project-panel-close" aria-label="<?php esc_attr_e( 'Close panel', 'portfolio-salma' ); ?>">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<line x1="18" y1="6" x2="6" y2="18"></line>
+				<line x1="6" y1="6" x2="18" y2="18"></line>
+			</svg>
+		</button>
+
+		<div class="project-panel-inner">
+			<div class="project-panel-image">
+				<img id="panel-image" src="" alt="" />
+			</div>
+
+			<div class="project-panel-info">
+				<h2 id="panel-title" class="project-panel-title"></h2>
+				<p id="panel-excerpt" class="project-panel-excerpt"></p>
+				<div id="panel-content" class="project-panel-description"></div>
+			</div>
+		</div>
+	</aside>
+</div>
 
 <?php
 get_footer();
