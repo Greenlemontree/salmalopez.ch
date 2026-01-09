@@ -154,6 +154,15 @@ function portfolio_salma_scripts() {
 			_S_VERSION,
 			true
 		);
+
+		// Project filter script
+		wp_enqueue_script(
+			'portfolio-salma-project-filter',
+			get_template_directory_uri() . '/js/project-filter.js',
+			array(),
+			_S_VERSION,
+			true
+		);
 	}
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
@@ -171,3 +180,8 @@ require get_template_directory() . '/inc/cpt-project.php';
 if ( defined( 'JETPACK__VERSION' ) ) {
 	require get_template_directory() . '/inc/jetpack.php';
 }
+
+/**
+ * Project Gallery and Video Meta Box
+ */
+require get_template_directory() . '/inc/project-meta.php';

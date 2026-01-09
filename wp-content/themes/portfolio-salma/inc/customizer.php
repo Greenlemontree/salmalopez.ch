@@ -137,6 +137,44 @@ function portfolio_salma_customize_register( $wp_customize ) {
 			)
 		)
 	);
+
+	// About Heading
+	$wp_customize->add_setting(
+		'portfolio_salma_about_heading',
+		array(
+			'default'           => 'Hello!',
+			'sanitize_callback' => 'sanitize_text_field',
+		)
+	);
+
+	$wp_customize->add_control(
+		'portfolio_salma_about_heading',
+		array(
+			'type'        => 'text',
+			'label'       => __( 'Heading', 'portfolio-salma' ),
+			'description' => __( 'The main heading for the About section.', 'portfolio-salma' ),
+			'section'     => 'portfolio_salma_about_section',
+		)
+	);
+
+	// About Text
+	$wp_customize->add_setting(
+		'portfolio_salma_about_text',
+		array(
+			'default'           => "I'm Salma, a 21-year-old student pursuing a degree in Interactive Media Design. Currently, I am in my fourth year at CFP-Arts Geneva.\n\nI'm eager to expand my knowledge by diving deeper into the industry and working on personal projects. While most of my current work stems from the school curriculum, I aim to demonstrate what I've learned over the past two years through projects and collaborations with teachers who are experts in their fields.\n\nIn addition to my academic work, you'll also find some of my personal projects here, including digital illustrations and videography work.",
+			'sanitize_callback' => 'wp_kses_post',
+		)
+	);
+
+	$wp_customize->add_control(
+		'portfolio_salma_about_text',
+		array(
+			'type'        => 'textarea',
+			'label'       => __( 'About Text', 'portfolio-salma' ),
+			'description' => __( 'Your bio text. Use double line breaks to create paragraphs.', 'portfolio-salma' ),
+			'section'     => 'portfolio_salma_about_section',
+		)
+	);
 }
 add_action( 'customize_register', 'portfolio_salma_customize_register' );
 

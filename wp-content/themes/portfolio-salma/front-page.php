@@ -130,14 +130,22 @@ $default_points = '150,180 380,220 620,170 870,200 800,270 900,360 850,420 620,3
 
 			<!-- Right: Heading + Text -->
 			<div class="about-right">
-				<h2 class="about-heading">Hello!</h2>
+				<h2 class="about-heading"><?php echo esc_html( get_theme_mod( 'portfolio_salma_about_heading', 'Hello!' ) ); ?></h2>
 
 				<div class="about-text">
-					<p>I'm Salma, a 21-year-old student pursuing a degree in Interactive Media Design. Currently, I am in my fourth year at CFP-Arts Geneva.</p>
-
-					<p>I'm eager to expand my knowledge by diving deeper into the industry and working on personal projects. While most of my current work stems from the school curriculum, I aim to demonstrate what I've learned over the past two years through projects and collaborations with teachers who are experts in their fields.</p>
-
-					<p>In addition to my academic work, you'll also find some of my personal projects here, including digital illustrations and videography work.</p>
+					<?php
+					$about_text = get_theme_mod( 'portfolio_salma_about_text', "I'm Salma, a 21-year-old student pursuing a degree in Interactive Media Design. Currently, I am in my fourth year at CFP-Arts Geneva.\n\nI'm eager to expand my knowledge by diving deeper into the industry and working on personal projects. While most of my current work stems from the school curriculum, I aim to demonstrate what I've learned over the past two years through projects and collaborations with teachers who are experts in their fields.\n\nIn addition to my academic work, you'll also find some of my personal projects here, including digital illustrations and videography work." );
+					// Convert double line breaks to paragraphs
+					$paragraphs = preg_split( '/\n\s*\n/', $about_text );
+					foreach ( $paragraphs as $paragraph ) :
+						$paragraph = trim( $paragraph );
+						if ( $paragraph ) :
+							?>
+							<p><?php echo wp_kses_post( nl2br( $paragraph ) ); ?></p>
+							<?php
+						endif;
+					endforeach;
+					?>
 				</div>
 			</div>
 		</div>
@@ -146,6 +154,26 @@ $default_points = '150,180 380,220 620,170 870,200 800,270 900,360 850,420 620,3
 	<!-- Projects Dot Grid Section -->
 	<section id="projects" class="projects-section">
 		<div class="projects-container">
+
+			<?php
+			// Get all project tags for filter buttons
+			$project_tags = get_terms( array(
+				'taxonomy'   => 'project_tag',
+				'hide_empty' => true,
+			) );
+
+			if ( ! empty( $project_tags ) && ! is_wp_error( $project_tags ) ) :
+			?>
+			<!-- Tag Filter Buttons -->
+			<div class="projects-filter">
+				<button type="button" class="filter-tag is-active" data-tag="all">All</button>
+				<?php foreach ( $project_tags as $tag ) : ?>
+					<button type="button" class="filter-tag" data-tag="<?php echo esc_attr( $tag->slug ); ?>">
+						<?php echo esc_html( $tag->name ); ?>
+					</button>
+				<?php endforeach; ?>
+			</div>
+			<?php endif; ?>
 
 			<!-- Dot Grid -->
 			<div class="projects-dot-grid">
@@ -164,14 +192,40 @@ $default_points = '150,180 380,220 620,170 870,200 800,270 900,360 850,420 620,3
 						$all_projects->the_post();
 						$number_display = str_pad( $project_number, 2, '0', STR_PAD_LEFT );
 						$thumbnail_url  = get_the_post_thumbnail_url( get_the_ID(), 'large' );
+
+						// Get gallery media (images + videos)
+						$project_media = portfolio_salma_get_project_media( get_the_ID() );
+						// If no gallery, use thumbnail as fallback
+						if ( empty( $project_media ) && $thumbnail_url ) {
+							$project_media = array( array( 'type' => 'image', 'url' => $thumbnail_url ) );
+						}
+
+						// Get project details (year, category, tools)
+						$project_details = portfolio_salma_get_project_details( get_the_ID() );
+
+						// Get project tags as slugs for filtering
+						$post_tags = get_the_terms( get_the_ID(), 'project_tag' );
+						$tag_slugs = array();
+						if ( ! empty( $post_tags ) && ! is_wp_error( $post_tags ) ) {
+							foreach ( $post_tags as $tag ) {
+								$tag_slugs[] = $tag->slug;
+							}
+						}
 						?>
 						<button type="button" class="project-dot-item"
 							data-project-id="<?php echo esc_attr( get_the_ID() ); ?>"
 							data-project-title="<?php echo esc_attr( get_the_title() ); ?>"
 							data-project-excerpt="<?php echo esc_attr( get_the_excerpt() ); ?>"
 							data-project-thumbnail="<?php echo esc_url( $thumbnail_url ); ?>"
+							data-project-media="<?php echo esc_attr( wp_json_encode( $project_media ) ); ?>"
+							data-project-year="<?php echo esc_attr( $project_details['year'] ); ?>"
+							data-project-category="<?php echo esc_attr( $project_details['category'] ); ?>"
+							data-project-tools="<?php echo esc_attr( $project_details['tools'] ); ?>"
 							data-project-content="<?php echo esc_attr( wp_strip_all_tags( get_the_content() ) ); ?>"
-							data-project-link="<?php echo esc_url( get_the_permalink() ); ?>">
+							data-project-link="<?php echo esc_url( get_the_permalink() ); ?>"
+							data-project-tags="<?php echo esc_attr( implode( ',', $tag_slugs ) ); ?>"
+							data-project-website="<?php echo esc_url( $project_details['website'] ); ?>"
+							data-project-youtube="<?php echo esc_url( $project_details['youtube'] ); ?>">
 							<!-- Number + Dot -->
 							<span class="project-dot-number"><?php echo esc_html( $number_display ); ?></span>
 							<span class="project-dot"></span>
@@ -182,11 +236,6 @@ $default_points = '150,180 380,220 620,170 870,200 800,270 900,360 850,420 620,3
 									<?php the_post_thumbnail( 'medium' ); ?>
 								<?php else : ?>
 									<div class="project-dot-placeholder"></div>
-								<?php endif; ?>
-								<?php if ( has_excerpt() ) : ?>
-									<div class="project-dot-excerpt">
-										<?php echo esc_html( get_the_excerpt() ); ?>
-									</div>
 								<?php endif; ?>
 							</div>
 						</button>
@@ -223,23 +272,47 @@ $default_points = '150,180 380,220 620,170 870,200 800,270 900,360 850,420 620,3
 <div id="project-panel" class="project-panel" aria-hidden="true">
 	<div class="project-panel-overlay"></div>
 	<aside class="project-panel-content">
+		<!-- Close button - top right -->
 		<button type="button" class="project-panel-close" aria-label="<?php esc_attr_e( 'Close panel', 'portfolio-salma' ); ?>">
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
 				<line x1="18" y1="6" x2="6" y2="18"></line>
 				<line x1="6" y1="6" x2="18" y2="18"></line>
 			</svg>
 		</button>
 
-		<div class="project-panel-inner">
-			<div class="project-panel-image">
+		<!-- Header - Title and Meta -->
+		<div class="project-panel-header">
+			<h2 id="panel-title" class="project-panel-title"></h2>
+			<div class="project-panel-meta">
+				<span id="panel-year" class="panel-meta-year"></span>
+				<span id="panel-category" class="panel-meta-category"></span>
+			</div>
+		</div>
+
+		<!-- Main content area - centered media with carousel -->
+		<div class="project-panel-main">
+			<div class="project-panel-media">
+				<!-- Image display -->
 				<img id="panel-image" src="" alt="" />
+				<!-- Video display -->
+				<video id="panel-video" playsinline style="display: none;"></video>
+				<!-- Custom play button for video -->
+				<button type="button" class="panel-video-play" id="panel-video-play">(play video)</button>
 			</div>
 
-			<div class="project-panel-info">
-				<h2 id="panel-title" class="project-panel-title"></h2>
-				<p id="panel-excerpt" class="project-panel-excerpt"></p>
-				<div id="panel-content" class="project-panel-description"></div>
+			<!-- Media navigation -->
+			<div class="project-panel-nav">
+				<button type="button" class="panel-nav-prev" aria-label="<?php esc_attr_e( 'Previous', 'portfolio-salma' ); ?>">&lt;</button>
+				<span class="panel-nav-counter"><span id="panel-current-image">1</span>/<span id="panel-total-images">1</span></span>
+				<button type="button" class="panel-nav-next" aria-label="<?php esc_attr_e( 'Next', 'portfolio-salma' ); ?>">&gt;</button>
 			</div>
+		</div>
+
+		<!-- Footer - Description and Tools -->
+		<div class="project-panel-footer">
+			<p id="panel-excerpt" class="project-panel-excerpt"></p>
+			<div id="panel-tools" class="project-panel-tools"></div>
+			<div id="panel-links" class="project-panel-links"></div>
 		</div>
 	</aside>
 </div>

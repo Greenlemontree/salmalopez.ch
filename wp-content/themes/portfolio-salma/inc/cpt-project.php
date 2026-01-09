@@ -103,6 +103,43 @@ function portfolio_salma_register_project_taxonomy() {
 add_action( 'init', 'portfolio_salma_register_project_taxonomy' );
 
 /**
+ * Register Project Tags Taxonomy
+ *
+ * Used for filtering projects by type (Animation, Web Design, etc.)
+ */
+function portfolio_salma_register_project_tags() {
+	$labels = array(
+		'name'                       => _x( 'Project Tags', 'taxonomy general name', 'portfolio-salma' ),
+		'singular_name'              => _x( 'Project Tag', 'taxonomy singular name', 'portfolio-salma' ),
+		'search_items'               => __( 'Search Tags', 'portfolio-salma' ),
+		'all_items'                  => __( 'All Tags', 'portfolio-salma' ),
+		'edit_item'                  => __( 'Edit Tag', 'portfolio-salma' ),
+		'update_item'                => __( 'Update Tag', 'portfolio-salma' ),
+		'add_new_item'               => __( 'Add New Tag', 'portfolio-salma' ),
+		'new_item_name'              => __( 'New Tag Name', 'portfolio-salma' ),
+		'menu_name'                  => __( 'Tags', 'portfolio-salma' ),
+		'popular_items'              => __( 'Popular Tags', 'portfolio-salma' ),
+		'separate_items_with_commas' => __( 'Separate tags with commas', 'portfolio-salma' ),
+		'add_or_remove_items'        => __( 'Add or remove tags', 'portfolio-salma' ),
+		'choose_from_most_used'      => __( 'Choose from most used tags', 'portfolio-salma' ),
+		'not_found'                  => __( 'No tags found.', 'portfolio-salma' ),
+	);
+
+	$args = array(
+		'hierarchical'      => false, // Like tags (not categories)
+		'labels'            => $labels,
+		'show_ui'           => true,
+		'show_admin_column' => true,
+		'query_var'         => true,
+		'rewrite'           => array( 'slug' => 'project-tag' ),
+		'show_in_rest'      => true,
+	);
+
+	register_taxonomy( 'project_tag', array( 'project' ), $args );
+}
+add_action( 'init', 'portfolio_salma_register_project_tags' );
+
+/**
  * Create default "Selected" term on theme activation
  */
 function portfolio_salma_create_default_terms() {
@@ -187,6 +224,7 @@ function portfolio_salma_get_selected_works( $count = 6 ) {
 function portfolio_salma_rewrite_flush() {
 	portfolio_salma_register_project_cpt();
 	portfolio_salma_register_project_taxonomy();
+	portfolio_salma_register_project_tags();
 	flush_rewrite_rules();
 }
 add_action( 'after_switch_theme', 'portfolio_salma_rewrite_flush' );
