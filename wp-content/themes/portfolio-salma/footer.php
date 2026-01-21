@@ -12,15 +12,41 @@
 ?>
 
 	<footer id="colophon" class="site-footer">
+		<!-- Corner dots -->
+		<span class="footer-dot footer-dot-tl"></span>
+		<span class="footer-dot footer-dot-tr"></span>
+		<span class="footer-dot footer-dot-bl"></span>
+		<span class="footer-dot footer-dot-br"></span>
+
 		<div class="footer-content">
-			<div class="footer-left">
-				<span class="footer-copyright">&copy; <?php echo date('Y'); ?> Salma Lopez</span>
+			<!-- Links column -->
+			<div class="footer-links">
+				<a href="mailto:salma.lopezgil@gmail.com" class="footer-link">
+					<span>(salma.lopezgil@gmail.com)</span>
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="7" y1="17" x2="17" y2="7"></line>
+						<polyline points="7 7 17 7 17 17"></polyline>
+					</svg>
+				</a>
+				<a href="https://www.instagram.com/greenlemontree__/" target="_blank" rel="noopener noreferrer" class="footer-link">
+					<span>(instagram)</span>
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="7" y1="17" x2="17" y2="7"></line>
+						<polyline points="7 7 17 7 17 17"></polyline>
+					</svg>
+				</a>
+				<a href="https://www.youtube.com/@salmalopez" target="_blank" rel="noopener noreferrer" class="footer-link">
+					<span>(youtube)</span>
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="7" y1="17" x2="17" y2="7"></line>
+						<polyline points="7 7 17 7 17 17"></polyline>
+					</svg>
+				</a>
 			</div>
-			<div class="footer-center">
-				<a href="mailto:salma@salmalopez.ch" class="footer-link">salma@salmalopez.ch</a>
-			</div>
-			<div class="footer-right">
-				<a href="https://www.instagram.com/greenlemontree__/" target="_blank" rel="noopener noreferrer" class="footer-link">Instagram</a>
+
+			<!-- Copyright -->
+			<div class="footer-copyright">
+				<span>&copy; <?php echo date('Y'); ?></span>
 			</div>
 		</div>
 	</footer><!-- #colophon -->

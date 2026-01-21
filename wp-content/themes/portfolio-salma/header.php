@@ -35,7 +35,7 @@
 			<div class="nav-left">
 				<ul id="primary-menu-left" class="nav-menu nav-menu-left">
 					<li><a href="#about">ABOUT</a></li>
-					<li><a href="#work">WORK</a></li>
+					<li><a href="#projects">WORK</a></li>
 				</ul>
 			</div>
 
@@ -51,7 +51,7 @@
 
 			<div class="nav-right">
 				<ul id="primary-menu-right" class="nav-menu nav-menu-right">
-					<li><a href="mailto:salma@salmalopez.ch">EMAIL</a></li>
+					<li><a href="mailto:salma.lopezgil@gmail.com">EMAIL</a></li>
 					<li><a href="https://www.instagram.com/greenlemontree__/" target="_blank" rel="noopener noreferrer">INSTAGRAM</a></li>
 				</ul>
 			</div>

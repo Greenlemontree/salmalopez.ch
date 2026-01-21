@@ -604,26 +604,27 @@ table {
 /* Links
 --------------------------------------------- */
 a {
-	color: #4169e1;
+	color: inherit;
+	text-decoration: none;
 }
 
 a:visited {
-	color: #800080;
+	color: inherit;
 }
 
 a:hover,
 a:focus,
 a:active {
-	color: #191970;
+	color: inherit;
 }
 
 a:focus {
-	outline: thin dotted;
+	outline: none;
 }
 
 a:hover,
 a:active {
-	outline: 0;
+	outline: none;
 }
 
 /* Forms
@@ -968,9 +969,41 @@ textarea {
 --------------------------------------------------------------*/
 
 .site-footer {
+	position: relative;
 	background-color: #171412;
-	padding: 2rem 0;
-	border-top: 1px solid rgba(217, 217, 217, 0.1);
+	padding: 2rem;
+	min-height: 280px;
+	display: flex;
+	align-items: center;
+}
+
+/* Corner dots */
+.footer-dot {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	background: #EAFF00;
+	border-radius: 50%;
+}
+
+.footer-dot-tl {
+	top: 1rem;
+	left: 1rem;
+}
+
+.footer-dot-tr {
+	top: 1rem;
+	right: 1rem;
+}
+
+.footer-dot-bl {
+	bottom: 1rem;
+	left: 1rem;
+}
+
+.footer-dot-br {
+	bottom: 1rem;
+	right: 1rem;
 }
 
 .footer-content {
@@ -980,35 +1013,25 @@ textarea {
 	max-width: 1400px;
 	margin: 0 auto;
 	padding: 0 2rem;
+	width: 100%;
 }
 
-.footer-left,
-.footer-center,
-.footer-right {
-	flex: 1;
-}
-
-.footer-center {
-	text-align: center;
-}
-
-.footer-right {
-	text-align: right;
-}
-
-.footer-copyright {
-	color: #D9D9D9;
-	font-size: 0.875rem;
-	font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
-	font-weight: 400;
+/* Links stacked vertically on the left */
+.footer-links {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
 }
 
 .footer-link {
-	color: #D9D9D9;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: #F5F5F0;
 	text-decoration: none;
-	font-size: 0.875rem;
-	font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
-	font-weight: 400;
+	font-size: 1rem;
+	font-family: 'Satoshi', sans-serif;
+	font-weight: 500;
 	transition: color 0.2s ease;
 }
 
@@ -1016,18 +1039,45 @@ textarea {
 	color: #EAFF00;
 }
 
+.footer-link:visited {
+	color: #F5F5F0;
+}
+
+.footer-link svg {
+	flex-shrink: 0;
+}
+
+/* Copyright positioned at bottom right, left of the dot */
+.footer-copyright {
+	position: absolute;
+	bottom: 1rem;
+	right: 2.5rem;
+	color: rgba(245, 245, 240, 0.6);
+	font-size: 0.875rem;
+	font-family: 'Satoshi', sans-serif;
+	font-weight: 400;
+}
+
 @media (max-width: 600px) {
-	.footer-content {
-		flex-direction: column;
-		gap: 1rem;
-		text-align: center;
+	.site-footer {
+		padding: 4rem 1.5rem 2rem;
 	}
 
-	.footer-left,
-	.footer-center,
-	.footer-right {
-		flex: none;
-		text-align: center;
+	.footer-dot {
+		width: 10px;
+		height: 10px;
+	}
+
+	.footer-content {
+		padding: 0 1rem;
+	}
+
+	.footer-link {
+		font-size: 0.9rem;
+	}
+
+	.footer-copyright {
+		right: 2rem;
 	}
 }
 
@@ -1633,7 +1683,7 @@ textarea {
 .projects-section {
 	background-color: #171412;
 	min-height: 100vh;
-	padding: 4rem 3rem;
+	padding: 4rem 3rem 16rem;
 	transition: background-color 0.6s ease;
 }
 
