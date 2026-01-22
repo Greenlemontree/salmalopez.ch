@@ -163,6 +163,28 @@ function portfolio_salma_scripts() {
 			_S_VERSION,
 			true
 		);
+
+		// Projects carousel (for archive page)
+		if ( is_post_type_archive( 'project' ) ) {
+			wp_enqueue_script(
+				'portfolio-salma-projects-carousel',
+				get_template_directory_uri() . '/js/projects-carousel.js',
+				array( 'gsap' ),
+				_S_VERSION,
+				true
+			);
+		}
+
+		// Single project page scripts
+		if ( is_singular( 'project' ) ) {
+			wp_enqueue_script(
+				'portfolio-salma-single-project',
+				get_template_directory_uri() . '/js/single-project.js',
+				array( 'gsap' ),
+				_S_VERSION,
+				true
+			);
+		}
 	}
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {

@@ -38,6 +38,8 @@ function portfolio_salma_project_media_callback( $post ) {
 	$project_tools   = get_post_meta( $post->ID, '_project_tools', true );
 	$project_website = get_post_meta( $post->ID, '_project_website', true );
 	$project_youtube = get_post_meta( $post->ID, '_project_youtube', true );
+	$video_graded_id = get_post_meta( $post->ID, '_project_video_graded', true );
+	$video_log_id    = get_post_meta( $post->ID, '_project_video_log', true );
 
 	// Enqueue media scripts
 	wp_enqueue_media();
@@ -236,6 +238,61 @@ function portfolio_salma_project_media_callback( $post ) {
 		</table>
 	</div>
 
+	<!-- Color Grading Comparison Section -->
+	<div class="project-meta-section">
+		<label><?php esc_html_e( 'Color Grading Comparison (Video Projects)', 'portfolio-salma' ); ?></label>
+		<p class="description"><?php esc_html_e( 'Upload two versions of your video for the before/after color grading slider.', 'portfolio-salma' ); ?></p>
+
+		<table class="form-table" style="margin-top: 10px;">
+			<tr>
+				<th style="width: 150px; padding: 10px 10px 10px 0;">
+					<label><?php esc_html_e( 'Color Graded Video', 'portfolio-salma' ); ?></label>
+				</th>
+				<td>
+					<div id="graded-video-preview" style="margin-bottom: 10px;">
+						<?php
+						if ( ! empty( $video_graded_id ) ) {
+							$video_url = wp_get_attachment_url( $video_graded_id );
+							if ( $video_url ) {
+								echo '<video src="' . esc_url( $video_url ) . '" style="max-width: 300px; max-height: 150px;" controls></video>';
+								echo '<br><button type="button" class="button remove-graded-video" style="margin-top: 5px;">Remove</button>';
+							}
+						}
+						?>
+					</div>
+					<input type="hidden" id="project_video_graded" name="project_video_graded" value="<?php echo esc_attr( $video_graded_id ); ?>">
+					<button type="button" class="button" id="add-graded-video-btn">
+						<?php esc_html_e( 'Select Color Graded Video', 'portfolio-salma' ); ?>
+					</button>
+					<p class="description" style="margin-top: 5px;"><?php esc_html_e( 'The final color graded version', 'portfolio-salma' ); ?></p>
+				</td>
+			</tr>
+			<tr>
+				<th style="padding: 10px 10px 10px 0;">
+					<label><?php esc_html_e( 'LOG Video', 'portfolio-salma' ); ?></label>
+				</th>
+				<td>
+					<div id="log-video-preview" style="margin-bottom: 10px;">
+						<?php
+						if ( ! empty( $video_log_id ) ) {
+							$video_url = wp_get_attachment_url( $video_log_id );
+							if ( $video_url ) {
+								echo '<video src="' . esc_url( $video_url ) . '" style="max-width: 300px; max-height: 150px;" controls></video>';
+								echo '<br><button type="button" class="button remove-log-video" style="margin-top: 5px;">Remove</button>';
+							}
+						}
+						?>
+					</div>
+					<input type="hidden" id="project_video_log" name="project_video_log" value="<?php echo esc_attr( $video_log_id ); ?>">
+					<button type="button" class="button" id="add-log-video-btn">
+						<?php esc_html_e( 'Select LOG Video', 'portfolio-salma' ); ?>
+					</button>
+					<p class="description" style="margin-top: 5px;"><?php esc_html_e( 'The original LOG/flat version for comparison', 'portfolio-salma' ); ?></p>
+				</td>
+			</tr>
+		</table>
+	</div>
+
 	<script>
 	jQuery(document).ready(function($) {
 		var imagesFrame;
@@ -358,6 +415,76 @@ function portfolio_salma_project_media_callback( $post ) {
 			$('#project_videos').val(idsArray.join(','));
 			item.remove();
 		});
+
+		// Color Graded Video
+		var gradedFrame;
+		$('#add-graded-video-btn').on('click', function(e) {
+			e.preventDefault();
+
+			if (gradedFrame) {
+				gradedFrame.open();
+				return;
+			}
+
+			gradedFrame = wp.media({
+				title: '<?php esc_html_e( 'Select Color Graded Video', 'portfolio-salma' ); ?>',
+				button: { text: '<?php esc_html_e( 'Use this video', 'portfolio-salma' ); ?>' },
+				library: { type: 'video' },
+				multiple: false
+			});
+
+			gradedFrame.on('select', function() {
+				var attachment = gradedFrame.state().get('selection').first().toJSON();
+				$('#project_video_graded').val(attachment.id);
+				$('#graded-video-preview').html(
+					'<video src="' + attachment.url + '" style="max-width: 300px; max-height: 150px;" controls></video>' +
+					'<br><button type="button" class="button remove-graded-video" style="margin-top: 5px;">Remove</button>'
+				);
+			});
+
+			gradedFrame.open();
+		});
+
+		// Remove graded video
+		$(document).on('click', '.remove-graded-video', function() {
+			$('#project_video_graded').val('');
+			$('#graded-video-preview').html('');
+		});
+
+		// LOG Video
+		var logFrame;
+		$('#add-log-video-btn').on('click', function(e) {
+			e.preventDefault();
+
+			if (logFrame) {
+				logFrame.open();
+				return;
+			}
+
+			logFrame = wp.media({
+				title: '<?php esc_html_e( 'Select LOG Video', 'portfolio-salma' ); ?>',
+				button: { text: '<?php esc_html_e( 'Use this video', 'portfolio-salma' ); ?>' },
+				library: { type: 'video' },
+				multiple: false
+			});
+
+			logFrame.on('select', function() {
+				var attachment = logFrame.state().get('selection').first().toJSON();
+				$('#project_video_log').val(attachment.id);
+				$('#log-video-preview').html(
+					'<video src="' + attachment.url + '" style="max-width: 300px; max-height: 150px;" controls></video>' +
+					'<br><button type="button" class="button remove-log-video" style="margin-top: 5px;">Remove</button>'
+				);
+			});
+
+			logFrame.open();
+		});
+
+		// Remove LOG video
+		$(document).on('click', '.remove-log-video', function() {
+			$('#project_video_log').val('');
+			$('#log-video-preview').html('');
+		});
 	});
 	</script>
 	<?php
@@ -419,6 +546,17 @@ function portfolio_salma_save_project_meta( $post_id ) {
 	if ( isset( $_POST['project_youtube'] ) ) {
 		$youtube = esc_url_raw( $_POST['project_youtube'] );
 		update_post_meta( $post_id, '_project_youtube', $youtube );
+	}
+
+	// Save color grading videos
+	if ( isset( $_POST['project_video_graded'] ) ) {
+		$video_graded = absint( $_POST['project_video_graded'] );
+		update_post_meta( $post_id, '_project_video_graded', $video_graded );
+	}
+
+	if ( isset( $_POST['project_video_log'] ) ) {
+		$video_log = absint( $_POST['project_video_log'] );
+		update_post_meta( $post_id, '_project_video_log', $video_log );
 	}
 }
 add_action( 'save_post_project', 'portfolio_salma_save_project_meta' );
@@ -500,17 +638,22 @@ function portfolio_salma_get_project_media( $post_id ) {
 }
 
 /**
- * Get project details (year, category, tools, website, youtube)
+ * Get project details (year, category, tools, website, youtube, color grading videos)
  *
  * @param int $post_id The project post ID.
- * @return array Associative array with year, category, tools, website, youtube.
+ * @return array Associative array with project details.
  */
 function portfolio_salma_get_project_details( $post_id ) {
+	$video_graded_id = get_post_meta( $post_id, '_project_video_graded', true );
+	$video_log_id    = get_post_meta( $post_id, '_project_video_log', true );
+
 	return array(
-		'year'     => get_post_meta( $post_id, '_project_year', true ),
-		'category' => get_post_meta( $post_id, '_project_category', true ),
-		'tools'    => get_post_meta( $post_id, '_project_tools', true ),
-		'website'  => get_post_meta( $post_id, '_project_website', true ),
-		'youtube'  => get_post_meta( $post_id, '_project_youtube', true ),
+		'year'         => get_post_meta( $post_id, '_project_year', true ),
+		'category'     => get_post_meta( $post_id, '_project_category', true ),
+		'tools'        => get_post_meta( $post_id, '_project_tools', true ),
+		'website'      => get_post_meta( $post_id, '_project_website', true ),
+		'youtube'      => get_post_meta( $post_id, '_project_youtube', true ),
+		'video_graded' => $video_graded_id ? wp_get_attachment_url( $video_graded_id ) : '',
+		'video_log'    => $video_log_id ? wp_get_attachment_url( $video_log_id ) : '',
 	);
 }

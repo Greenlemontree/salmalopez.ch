@@ -35,7 +35,7 @@
 			<div class="nav-left">
 				<ul id="primary-menu-left" class="nav-menu nav-menu-left">
 					<li><a href="#about">ABOUT</a></li>
-					<li><a href="#projects">WORK</a></li>
+					<li><a href="<?php echo esc_url( get_post_type_archive_link( 'project' ) ); ?>">WORK</a></li>
 				</ul>
 			</div>
 
